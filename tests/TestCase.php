@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\Artisan;
 use Laravel\WorkOS\WorkOSServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 

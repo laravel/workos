@@ -1,6 +1,6 @@
 {
     "name": "laravel/workos",
-    "description": "Utilities for integrating Laravel starter kits and WorkOS.",
+    "description": "Utilities for integrating the Laravel starter kits with WorkOS.",
     "keywords": ["laravel", "workos"],
     "homepage": "https://github.com/laravel/workos",
     "license": "MIT",

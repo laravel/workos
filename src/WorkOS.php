@@ -59,12 +59,7 @@ class WorkOS
     public static function decodeAccessToken(string $accessToken): array|bool
     {
         try {
-            return (array) JWT::decode(
-                $accessToken,
-                JWK::parseKeySet(Http::get(
-                    (new UserManagement)->getJwksUrl(config('services.workos.client_id'))
-                )->json())
-            );
+            return (array) JWT::decode($accessToken, JWK::parseKeySet(static::getJwk()));
         } catch (Throwable $e) {
             //
         }

@@ -94,7 +94,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     protected function updateUsing(AppUser $user, User $userFromWorkOS): AppUser
     {
         return tap($user)->update([
-            'name' => $userFromWorkOS->firstName.' '.$userFromWorkOS->lastName,
+            // 'name' => $userFromWorkOS->firstName.' '.$userFromWorkOS->lastName,
             'avatar' => $userFromWorkOS->avatar ?? '',
         ]);
     }

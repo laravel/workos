@@ -9,7 +9,7 @@
 
 ## Introduction
 
-These Laravel WorkOS utilities are used by the [Laravel starter kits](https://laravel.com/docs/starter-kits) to integrate with WorkOS AuthKit.
+These Laravel WorkOS utilities are used by the [Laravel starter kits](https://laravel.com/docs/starter-kits) to integrate with [WorkOS AuthKit](https://www.authkit.com/).
 
 ## Official Documentation
 

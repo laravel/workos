@@ -18,9 +18,7 @@ class AuthKitLoginRequest extends FormRequest
     {
         WorkOS::configure();
 
-        $userManagement = new UserManagement;
-
-        $url = $userManagement->getAuthorizationUrl(
+        $url = (new UserManagement)->getAuthorizationUrl(
             config('services.workos.redirect_url'),
             ['state' => $state = Str::random(20)],
             'authkit',

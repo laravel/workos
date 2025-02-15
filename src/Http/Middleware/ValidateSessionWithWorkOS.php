@@ -16,6 +16,8 @@ class ValidateSessionWithWorkOS
      */
     public function handle(Request $request, Closure $next)
     {
+        WorkOS::configure();
+
         if (! $request->session()->get('workos_access_token') ||
             ! $request->session()->get('workos_refresh_token')) {
             return $this->logout($request);
@@ -29,7 +31,6 @@ class ValidateSessionWithWorkOS
 
             $request->session()->put('workos_access_token', $accessToken);
             $request->session()->put('workos_refresh_token', $refreshToken);
-            $request->session()->put('workos_last_activity', time());
         } catch (WorkOSException $e) {
             report($e);
 

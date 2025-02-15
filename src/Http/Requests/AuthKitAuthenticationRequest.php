@@ -59,7 +59,6 @@ class AuthKitAuthenticationRequest extends FormRequest
 
         $this->session()->put('workos_access_token', $accessToken);
         $this->session()->put('workos_refresh_token', $refreshToken);
-        $this->session()->put('workos_last_activity', time());
 
         $this->session()->regenerate();
 

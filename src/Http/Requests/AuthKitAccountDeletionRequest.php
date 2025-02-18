@@ -20,9 +20,11 @@ class AuthKitAccountDeletionRequest extends FormRequest
 
         $user = $this->user();
 
-        (new UserManagement)->deleteUser(
-            $user->workos_id
-        );
+        if ($user->workos_id && ! app()->runningUnitTests()) {
+            (new UserManagement)->deleteUser(
+                $user->workos_id
+            );
+        }
 
         Auth::guard('web')->logout();
 

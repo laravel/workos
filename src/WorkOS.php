@@ -34,6 +34,8 @@ class WorkOS
      */
     public static function ensureAccessTokenIsValid(string $accessToken, string $refreshToken): array
     {
+        static::configure();
+
         $workOsSession = static::decodeAccessToken($accessToken);
 
         if (! $workOsSession) {
@@ -58,6 +60,8 @@ class WorkOS
      */
     public static function decodeAccessToken(string $accessToken): array|bool
     {
+        static::configure();
+
         try {
             return (array) JWT::decode($accessToken, JWK::parseKeySet(static::getJwk()));
         } catch (Throwable $e) {

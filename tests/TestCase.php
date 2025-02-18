@@ -19,6 +19,6 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function getPackageProviders($app)
     {
-        return [WorkOSServiceProvider::class];
+        return [];
     }
 }

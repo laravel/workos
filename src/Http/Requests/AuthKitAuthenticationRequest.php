@@ -3,7 +3,6 @@
 namespace Laravel\WorkOS\Http\Requests;
 
 use App\Models\User as AppUser;
-use Closure;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +15,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Redirect the user to WorkOS for authentication.
      */
-    public function authenticate(?Closure $findUsing = null, ?Closure $createUsing = null, ?Closure $updateUsing = null): mixed
+    public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null): mixed
     {
         WorkOS::configure();
 

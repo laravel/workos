@@ -16,11 +16,11 @@ class AuthKitAccountDeletionRequest extends FormRequest
      */
     public function delete(Closure $using): RedirectResponse
     {
-        WorkOS::configure();
-
         $user = $this->user();
 
-        if ($user->workos_id && ! app()->runningUnitTests()) {
+        if (isset($user->workos_id) && ! app()->runningUnitTests()) {
+            WorkOS::configure();
+
             (new UserManagement)->deleteUser(
                 $user->workos_id
             );

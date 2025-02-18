@@ -16,8 +16,6 @@ class AuthKitLogoutRequest extends FormRequest
      */
     public function logout(): Response
     {
-        WorkOS::configure();
-
         $accessToken = $this->session()->get('workos_access_token');
 
         $workOsSession = $accessToken

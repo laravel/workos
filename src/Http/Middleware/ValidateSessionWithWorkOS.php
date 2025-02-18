@@ -16,11 +16,11 @@ class ValidateSessionWithWorkOS
      */
     public function handle(Request $request, Closure $next)
     {
-        WorkOS::configure();
-
         if (app()->runningUnitTests()) {
             return $next($request);
         }
+
+        WorkOS::configure();
 
         if (! $request->session()->get('workos_access_token') ||
             ! $request->session()->get('workos_refresh_token')) {

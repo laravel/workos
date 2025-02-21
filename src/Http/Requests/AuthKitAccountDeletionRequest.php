@@ -13,8 +13,10 @@ class AuthKitAccountDeletionRequest extends FormRequest
 {
     /**
      * Redirect the user to WorkOS for authentication.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function delete(Closure $using): RedirectResponse
+    public function delete(Closure $using)
     {
         $user = $this->user();
 

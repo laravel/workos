@@ -31,8 +31,10 @@ class AuthKitAccountDeletionRequest extends FormRequest
 
         $using($user);
 
-        $this->session()->invalidate();
-        $this->session()->regenerateToken();
+        if ($this->hasSession()) {
+            $this->session()->invalidate();
+            $this->session()->regenerateToken();
+        }
 
         return redirect('/');
     }

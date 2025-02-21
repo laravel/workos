@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Laravel\WorkOS\WorkOS;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use WorkOS\UserManagement;
 
 class AuthKitAccountDeletionRequest extends FormRequest

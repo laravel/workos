@@ -39,10 +39,10 @@ class AuthKitAuthenticationRequest extends FormRequest
 
         $user = new User(
             id: $user->id,
+            organizationId: $organizationId,
             firstName: $user->firstName,
             lastName: $user->lastName,
             email: $user->email,
-            organizationId: $organizationId,
             avatar: $user->profilePictureUrl,
         );
 

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
 use WorkOS\Resource\AuthenticationResponse;
-use WorkOS\Resource\User as ResourceUser;
 use WorkOS\UserManagement;
 
 class AuthKitAuthenticationRequest extends FormRequest

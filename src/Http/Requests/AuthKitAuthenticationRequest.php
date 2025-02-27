@@ -8,6 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
+use WorkOS\Resource\AuthenticationResponse;
+use WorkOS\Resource\User as ResourceUser;
 use WorkOS\UserManagement;
 
 class AuthKitAuthenticationRequest extends FormRequest
@@ -15,7 +17,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Redirect the user to WorkOS for authentication.
      */
-    public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null): mixed
+    public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null, ?callable $makeUsing = null): mixed
     {
         app(WorkOS::class)::configure();
 
@@ -24,6 +26,7 @@ class AuthKitAuthenticationRequest extends FormRequest
         $findUsing ??= $this->findUsing(...);
         $createUsing ??= $this->createUsing(...);
         $updateUsing ??= $this->updateUsing(...);
+        $makeUsing ??= $this->makeUsing(...);
 
         $user = app(UserManagement::class)->authenticateWithCode(
             config('services.workos.client_id'),
@@ -36,13 +39,7 @@ class AuthKitAuthenticationRequest extends FormRequest
             $user->refresh_token,
         ];
 
-        $user = app()->make(User::class, [
-            'id' => $user->id,
-            'firstName' => $user->firstName,
-            'lastName' => $user->lastName,
-            'email' => $user->email,
-            'avatar' => $user->profilePictureUrl,
-        ]);
+        $user = $makeUsing($user);
 
         $existingUser = $findUsing($user->id);
 
@@ -62,6 +59,17 @@ class AuthKitAuthenticationRequest extends FormRequest
         $this->session()->regenerate();
 
         return $existingUser;
+    }
+
+    protected function makeUsing(ResourceUser $user): User
+    {
+        return  app()->make(User::class, [
+            'id' => $user->id,
+            'firstName' => $user->firstName,
+            'lastName' => $user->lastName,
+            'email' => $user->email,
+            'avatar' => $user->profilePictureUrl,
+        ]);
     }
 
     /**

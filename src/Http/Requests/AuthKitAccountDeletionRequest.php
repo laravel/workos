@@ -22,7 +22,7 @@ class AuthKitAccountDeletionRequest extends FormRequest
         if (isset($user->workos_id) && ! app()->runningUnitTests()) {
             WorkOS::configure();
 
-            (new UserManagement)->deleteUser(
+            app(UserManagement::class)->deleteUser(
                 $user->workos_id
             );
         }

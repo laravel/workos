@@ -19,7 +19,7 @@ class AuthKitLogoutRequest extends FormRequest
         $accessToken = $this->session()->get('workos_access_token');
 
         $workOsSession = $accessToken
-            ? WorkOS::decodeAccessToken($accessToken)
+            ? app(WorkOS::class)::decodeAccessToken($accessToken)
             : false;
 
         Auth::guard('web')->logout();
@@ -31,7 +31,7 @@ class AuthKitLogoutRequest extends FormRequest
             return redirect('/');
         }
 
-        $logoutUrl = (new UserManagement)->getLogoutUrl(
+        $logoutUrl = app(UserManagement::class)->getLogoutUrl(
             $workOsSession['sid'],
         );
 

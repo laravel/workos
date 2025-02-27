@@ -26,7 +26,7 @@ class WorkOS
             throw new RuntimeException("The 'services.workos.redirect_url' configuration value is undefined.");
         }
 
-        SDK::setClientId(config('services.workos.client_id'));
+        app(SDK::class)::setClientId(config('services.workos.client_id'));
     }
 
     /**
@@ -39,7 +39,7 @@ class WorkOS
         $workOsSession = static::decodeAccessToken($accessToken);
 
         if (! $workOsSession) {
-            $result = (new UserManagement)->authenticateWithRefreshToken(
+            $result = app(UserManagement::class)->authenticateWithRefreshToken(
                 config('services.workos.client_id'), $refreshToken
             );
 
@@ -78,7 +78,7 @@ class WorkOS
     {
         return Cache::remember('workos:jwk', now()->addHours(12), function () {
             return Http::get(
-                (new UserManagement)->getJwksUrl(config('services.workos.client_id'))
+                app(UserManagement::class)->getJwksUrl(config('services.workos.client_id'))
             )->json();
         });
     }

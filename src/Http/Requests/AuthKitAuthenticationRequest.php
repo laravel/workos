@@ -17,7 +17,7 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null): mixed
     {
-        WorkOS::configure();
+        app(WorkOS::class)::configure();
 
         $this->ensureStateIsValid();
 
@@ -25,7 +25,7 @@ class AuthKitAuthenticationRequest extends FormRequest
         $createUsing ??= $this->createUsing(...);
         $updateUsing ??= $this->updateUsing(...);
 
-        $user = (new UserManagement)->authenticateWithCode(
+        $user = app(UserManagement::class)->authenticateWithCode(
             config('services.workos.client_id'),
             $this->query('code'),
         );
@@ -36,13 +36,13 @@ class AuthKitAuthenticationRequest extends FormRequest
             $user->refresh_token,
         ];
 
-        $user = new User(
-            id: $user->id,
-            firstName: $user->firstName,
-            lastName: $user->lastName,
-            email: $user->email,
-            avatar: $user->profilePictureUrl,
-        );
+        $user = app()->make(User::class, [
+            'id' => $user->id,
+            'firstName' => $user->firstName,
+            'lastName' => $user->lastName,
+            'email' => $user->email,
+            'avatar' => $user->profilePictureUrl,
+        ]);
 
         $existingUser = $findUsing($user->id);
 

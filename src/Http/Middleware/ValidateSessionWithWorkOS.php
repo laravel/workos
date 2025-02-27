@@ -20,7 +20,7 @@ class ValidateSessionWithWorkOS
             return $next($request);
         }
 
-        WorkOS::configure();
+        app(WorkOS::class)::configure();
 
         if (! $request->session()->get('workos_access_token') ||
             ! $request->session()->get('workos_refresh_token')) {
@@ -28,7 +28,7 @@ class ValidateSessionWithWorkOS
         }
 
         try {
-            [$accessToken, $refreshToken] = WorkOS::ensureAccessTokenIsValid(
+            [$accessToken, $refreshToken] = app(WorkOS::class)::ensureAccessTokenIsValid(
                 $request->session()->get('workos_access_token'),
                 $request->session()->get('workos_refresh_token'),
             );

@@ -34,12 +34,10 @@ class AuthKitAuthenticationRequest extends FormRequest
         );
 
         [$user, $accessToken, $refreshToken] = [
-            $user->user,
+            $makeUsing($user),
             $user->access_token,
             $user->refresh_token,
         ];
-
-        $user = $makeUsing($user);
 
         $existingUser = $findUsing($user->id);
 
@@ -61,8 +59,10 @@ class AuthKitAuthenticationRequest extends FormRequest
         return $existingUser;
     }
 
-    protected function makeUsing(ResourceUser $user): User
+    protected function makeUsing(AuthenticationResponse $response): User
     {
+        $user = $response->user;
+
         return  app()->make(User::class, [
             'id' => $user->id,
             'firstName' => $user->firstName,

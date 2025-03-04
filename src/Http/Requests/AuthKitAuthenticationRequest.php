@@ -6,8 +6,10 @@ use App\Models\User as AppUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
+use Symfony\Component\HttpFoundation\Response;
 use WorkOS\UserManagement;
 
 class AuthKitAuthenticationRequest extends FormRequest
@@ -34,7 +36,7 @@ class AuthKitAuthenticationRequest extends FormRequest
             $user->user,
             $user->access_token,
             $user->refresh_token,
-            $user->organization_id,
+            $user->organizationId,
         ];
 
         $user = new User(
@@ -64,6 +66,20 @@ class AuthKitAuthenticationRequest extends FormRequest
         $this->session()->regenerate();
 
         return $existingUser;
+    }
+
+    /**
+     * Redirect the user to the previous or default URL.
+     */
+    public function redirect(string $default = '/'): Response
+    {
+        $url = rtrim(base64_decode($this->session()->get('state')), '/') ?: null;
+
+        $to = $url !== null && $url !== url('/') ? $url : $default;
+
+        return class_exists(Inertia::class)
+            ? Inertia::location($to)
+            : redirect($to);
     }
 
     /**
@@ -104,7 +120,7 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     protected function ensureStateIsValid(): void
     {
-        $state = json_decode($this->query('state'), true)['state'] ?? false;
+        $state = json_decode($this->query('state'), true)['state'] ?? null;
 
         if ($state !== $this->session()->get('state')) {
             abort(403);

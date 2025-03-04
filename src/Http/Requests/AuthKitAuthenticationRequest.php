@@ -34,7 +34,7 @@ class AuthKitAuthenticationRequest extends FormRequest
             $user->user,
             $user->access_token,
             $user->refresh_token,
-            $user->organization_id,
+            $user->organizationId,
         ];
 
         $user = new User(

@@ -6,8 +6,11 @@ use App\Models\User as AppUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
+use Inertia\Inertia;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
+use Symfony\Component\HttpFoundation\Response;
 use WorkOS\UserManagement;
 
 class AuthKitAuthenticationRequest extends FormRequest
@@ -100,16 +103,40 @@ class AuthKitAuthenticationRequest extends FormRequest
     }
 
     /**
+     * Redirect the user to the previous URL or a default URL if no previous URL is available.
+     */
+    public function redirect(string $default = '/'): Response
+    {
+        $previousUrl = rtrim(base64_decode($this->sessionState()['previous_url'] ?? '/')) ?: null;
+
+        $to = ! is_null($previousUrl) && $previousUrl !== URL::to('/')
+            ? $previousUrl
+            : $default;
+
+        return class_exists(Inertia::class)
+            ? Inertia::location($to)
+            : redirect($to);
+    }
+
+    /**
      * Ensure the request state is valid.
      */
     protected function ensureStateIsValid(): void
     {
         $state = json_decode($this->query('state'), true)['state'] ?? false;
 
-        if ($state !== $this->session()->get('state')) {
+        if ($state !== ($this->sessionState()['state'] ?? false)) {
             abort(403);
         }
 
         $this->session()->forget('state');
+    }
+
+    /**
+     * Get the session state.
+     */
+    protected function sessionState(): array
+    {
+        return json_decode($this->session()->get('state'), true) ?: [];
     }
 }

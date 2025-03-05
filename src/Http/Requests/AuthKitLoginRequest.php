@@ -3,6 +3,7 @@
 namespace Laravel\WorkOS\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\WorkOS\WorkOS;
@@ -20,11 +21,14 @@ class AuthKitLoginRequest extends FormRequest
 
         $url = (new UserManagement)->getAuthorizationUrl(
             config('services.workos.redirect_url'),
-            ['state' => $state = Str::random(20)],
+            $state = [
+                'state' => Str::random(20),
+                'previous_url' => base64_encode(URL::previous()),
+            ],
             'authkit',
         );
 
-        $this->session()->put('state', $state);
+        $this->session()->put('state', json_encode($state));
 
         return class_exists(Inertia::class)
             ? Inertia::location($url)

@@ -103,14 +103,14 @@ class AuthKitAuthenticationRequest extends FormRequest
     }
 
     /**
-     * Redirect the user to the previous or default URL.
+     * Redirect the user to the previous URL or a default URL if no previous URL is available.
      */
     public function redirect(string $default = '/'): Response
     {
-        $url = rtrim(base64_decode($this->sessionState()['previous_url'] ?? '/')) ?: null;
+        $previousUrl = rtrim(base64_decode($this->sessionState()['previous_url'] ?? '/')) ?: null;
 
-        $to = ! is_null($url) && $url !== URL::to('/')
-            ? $url
+        $to = ! is_null($previousUrl) && $previousUrl !== URL::to('/')
+            ? $previousUrl
             : $default;
 
         return class_exists(Inertia::class)

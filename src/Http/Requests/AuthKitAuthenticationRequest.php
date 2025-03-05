@@ -6,6 +6,7 @@ use App\Models\User as AppUser;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
@@ -69,20 +70,6 @@ class AuthKitAuthenticationRequest extends FormRequest
     }
 
     /**
-     * Redirect the user to the previous or default URL.
-     */
-    public function redirect(string $default = '/'): Response
-    {
-        $url = rtrim(base64_decode($this->session()->get('state')), '/') ?: null;
-
-        $to = $url !== null && $url !== url('/') ? $url : $default;
-
-        return class_exists(Inertia::class)
-            ? Inertia::location($to)
-            : redirect($to);
-    }
-
-    /**
      * Find the user with the given WorkOS ID.
      */
     protected function findUsing(string $id): ?AppUser
@@ -116,13 +103,29 @@ class AuthKitAuthenticationRequest extends FormRequest
     }
 
     /**
+     * Redirect the user to the previous or default URL.
+     */
+    public function redirect(string $default = '/'): Response
+    {
+        $url = rtrim(base64_decode(json_decode($this->session()->get('state'), true)['previous_url'] ?? '/')) ?: null;
+
+        $to = ! is_null($url) && $url !== URL::to('/')
+            ? $url
+            : $default;
+
+        return class_exists(Inertia::class)
+            ? Inertia::location($to)
+            : redirect($to);
+    }
+
+    /**
      * Ensure the request state is valid.
      */
     protected function ensureStateIsValid(): void
     {
-        $state = json_decode($this->query('state'), true)['state'] ?? null;
+        $state = json_decode($this->query('state'), true)['state'] ?? false;
 
-        if ($state !== $this->session()->get('state')) {
+        if ($state !== (json_decode($this->session()->get('state'), true)['state'] ?? false)) {
             abort(403);
         }
 

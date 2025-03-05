@@ -107,7 +107,7 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     public function redirect(string $default = '/'): Response
     {
-        $url = rtrim(base64_decode(json_decode($this->session()->get('state'), true)['previous_url'] ?? '/')) ?: null;
+        $url = rtrim(base64_decode($this->sessionState()['previous_url'] ?? '/')) ?: null;
 
         $to = ! is_null($url) && $url !== URL::to('/')
             ? $url
@@ -125,10 +125,18 @@ class AuthKitAuthenticationRequest extends FormRequest
     {
         $state = json_decode($this->query('state'), true)['state'] ?? false;
 
-        if ($state !== (json_decode($this->session()->get('state'), true)['state'] ?? false)) {
+        if ($state !== ($this->sessionState()['state'] ?? false)) {
             abort(403);
         }
 
         $this->session()->forget('state');
+    }
+
+    /**
+     * Get the session state.
+     */
+    protected function sessionState(): array
+    {
+        return json_decode($this->session()->get('state'), true) ?: [];
     }
 }

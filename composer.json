@@ -19,6 +19,7 @@
         "illuminate/contracts": "^11.0|^12.0",
         "illuminate/support": "^11.0|^12.0",
         "workos/workos-php": "^4.18",
+        "workos/workos-php-laravel": "^4.1",
         "firebase/php-jwt": "^6.11"
     },
     "require-dev": {

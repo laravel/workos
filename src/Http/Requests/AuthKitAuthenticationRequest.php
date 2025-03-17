@@ -74,6 +74,7 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     protected function findUsing(string $id): ?AppUser
     {
+        /** @phpstan-ignore class.notFound */
         return AppUser::where('workos_id', $id)->first();
     }
 
@@ -82,6 +83,7 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     protected function createUsing(User $user): AppUser
     {
+        /** @phpstan-ignore class.notFound */
         return AppUser::create([
             'name' => $user->firstName.' '.$user->lastName,
             'email' => $user->email,

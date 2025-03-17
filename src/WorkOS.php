@@ -20,6 +20,10 @@ class WorkOS
     {
         if (! config('services.workos.client_id')) {
             throw new RuntimeException("The 'services.workos.client_id' configuration value is undefined.");
+        } 
+
+        if (! config('services.workos.secret')) {
+            throw new RuntimeException("The 'services.workos.secret' configuration value is undefined.");
         }
 
         if (! config('services.workos.redirect_url')) {
@@ -27,6 +31,7 @@ class WorkOS
         }
 
         SDK::setClientId(config('services.workos.client_id'));
+        SDK::setApiKey(config('services.workos.secret'));
     }
 
     /**

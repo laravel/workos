@@ -31,6 +31,7 @@ class WorkOS
         }
 
         SDK::setClientId(config('services.workos.client_id'));
+
         SDK::setApiKey(config('services.workos.secret'));
     }
 

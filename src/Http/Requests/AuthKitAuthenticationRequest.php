@@ -18,7 +18,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Redirect the user to WorkOS for authentication.
      */
-    public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null): mixed
+    public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null, bool $allowUpdate = true): mixed
     {
         WorkOS::configure();
 
@@ -55,7 +55,7 @@ class AuthKitAuthenticationRequest extends FormRequest
             $existingUser = $createUsing($user);
 
             event(new Registered($existingUser));
-        } elseif (! is_null($updateUsing)) {
+        } elseif (! is_null($updateUsing) && $allowUpdate) {
             $existingUser = $updateUsing($existingUser, $user);
         }
 

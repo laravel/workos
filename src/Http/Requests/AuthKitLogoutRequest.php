@@ -14,7 +14,7 @@ class AuthKitLogoutRequest extends FormRequest
     /**
      * Redirect the user to WorkOS for authentication.
      */
-    public function logout(): Response
+    public function logout(?string $redirectTo = null): Response
     {
         $accessToken = $this->session()->get('workos_access_token');
 
@@ -28,11 +28,12 @@ class AuthKitLogoutRequest extends FormRequest
         $this->session()->regenerateToken();
 
         if (! $workOsSession) {
-            return redirect('/');
+            return redirect($redirectTo ?? '/');
         }
 
         $logoutUrl = (new UserManagement)->getLogoutUrl(
             $workOsSession['sid'],
+            $redirectTo ? url($redirectTo) : null,
         );
 
         return class_exists(Inertia::class)

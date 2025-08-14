@@ -49,7 +49,7 @@ class AuthKitAuthenticationRequest extends FormRequest
             avatar: $user->profilePictureUrl,
         );
 
-        $existingUser = $findUsing($user->id);
+        $existingUser = $findUsing($user);
 
         if (! $existingUser) {
             $existingUser = $createUsing($user);
@@ -72,10 +72,10 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Find the user with the given WorkOS ID.
      */
-    protected function findUsing(string $id): ?AppUser
+    protected function findUsing(User $user): ?AppUser
     {
         /** @phpstan-ignore class.notFound */
-        return AppUser::where('workos_id', $id)->first();
+        return AppUser::where('workos_id', $user->id)->first();
     }
 
     /**

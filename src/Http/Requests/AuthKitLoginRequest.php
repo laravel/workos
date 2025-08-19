@@ -14,8 +14,14 @@ class AuthKitLoginRequest extends FormRequest
 {
     /**
      * Redirect the user to WorkOS for authentication.
+     *
+     * @param  array{
+     *     screenHint?: 'sign-in'|'sign-up',
+     *     domainHint?: string,
+     *     loginHint?: string
+     * }  $options
      */
-    public function redirect(): Response
+    public function redirect(array $options = []): Response
     {
         WorkOS::configure();
 
@@ -26,6 +32,9 @@ class AuthKitLoginRequest extends FormRequest
                 'previous_url' => base64_encode(URL::previous()),
             ],
             'authkit',
+            domainHint: $options['domainHint'] ?? null,
+            loginHint: $options['loginHint'] ?? null,
+            screenHint:  $options['screenHint'] ?? null,
         );
 
         $this->session()->put('state', json_encode($state));

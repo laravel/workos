@@ -34,7 +34,7 @@ class AuthKitLoginRequest extends FormRequest
             'authkit',
             domainHint: $options['domainHint'] ?? null,
             loginHint: $options['loginHint'] ?? null,
-            screenHint:  $options['screenHint'] ?? null,
+            screenHint: $options['screenHint'] ?? null,
         );
 
         $this->session()->put('state', json_encode($state));

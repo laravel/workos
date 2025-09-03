@@ -33,7 +33,7 @@ class AuthKitLogoutRequest extends FormRequest
 
         $logoutUrl = (new UserManagement)->getLogoutUrl(
             $workOsSession['sid'],
-            $redirectTo ? url($redirectTo) : null,
+            $redirectTo ? url($redirectTo) : config('services.workos.return_to'),
         );
 
         return class_exists(Inertia::class)

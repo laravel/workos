@@ -105,14 +105,30 @@ it('supports login hint parameter', function () {
         ->toContain('login_hint='.urlencode('francisco@laravel.com'));
 });
 
+it('uses default redirect URL when not specified', function () {
+    $response = $this->request->redirect();
+
+    expect($response->headers->get('Location'))
+        ->toContain('redirect_uri='.urlencode('https://laravel.com/authenticate'));
+});
+
+it('uses custom redirect URL when specified', function () {
+    $response = $this->request->redirect(['redirectUrl' => 'https://custom.laravel.com/authenticate']);
+
+    expect($response->headers->get('Location'))
+        ->toContain('redirect_uri='.urlencode('https://custom.laravel.com/authenticate'));
+});
+
 it('supports multiple parameters at once', function () {
     $response = $this->request->redirect([
         'screenHint' => 'sign-in',
         'domainHint' => 'laravel.com',
         'loginHint' => 'francisco@laravel.com',
+        'redirectUrl' => 'https://custom.laravel.com/authenticate',
     ]);
 
     expect($response->headers->get('Location'))->toContain('screen_hint=sign-in')
         ->toContain('domain_hint=laravel.com')
-        ->toContain('login_hint='.urlencode('francisco@laravel.com'));
+        ->toContain('login_hint='.urlencode('francisco@laravel.com'))
+        ->toContain('redirect_uri='.urlencode('https://custom.laravel.com/authenticate'));
 });

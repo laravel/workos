@@ -18,7 +18,8 @@ class AuthKitLoginRequest extends FormRequest
      * @param  array{
      *     screenHint?: 'sign-in'|'sign-up',
      *     domainHint?: string,
-     *     loginHint?: string
+     *     loginHint?: string,
+     *     redirectUrl?: string,
      * }  $options
      */
     public function redirect(array $options = []): Response
@@ -26,7 +27,7 @@ class AuthKitLoginRequest extends FormRequest
         WorkOS::configure();
 
         $url = (new UserManagement)->getAuthorizationUrl(
-            config('services.workos.redirect_url'),
+            $options['redirectUrl'] ?? config('services.workos.redirect_url'),
             $state = [
                 'state' => Str::random(20),
                 'previous_url' => base64_encode(URL::previous()),

@@ -76,6 +76,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     protected function findUsing(User $user): ?Authenticatable
     {
         $userModelClass = Config::get('auth.providers.users.model');
+
         return $userModelClass::where('workos_id', $user->id)->first();
     }
 
@@ -85,6 +86,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     protected function createUsing(User $user): Authenticatable
     {
         $userModelClass = Config::get('auth.providers.users.model');
+
         return $userModelClass::create([
             'name' => $user->firstName.' '.$user->lastName,
             'email' => $user->email,

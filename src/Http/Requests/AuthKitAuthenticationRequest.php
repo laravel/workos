@@ -2,10 +2,11 @@
 
 namespace Laravel\WorkOS\Http\Requests;
 
-use App\Models\User as AppUser;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Laravel\WorkOS\User;
@@ -72,19 +73,21 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Find the user with the given WorkOS ID.
      */
-    protected function findUsing(User $user): ?AppUser
+    protected function findUsing(User $user): ?Authenticatable
     {
-        /** @phpstan-ignore class.notFound */
-        return AppUser::where('workos_id', $user->id)->first();
+        $userModelClass = Config::get('auth.providers.users.model');
+
+        return $userModelClass::where('workos_id', $user->id)->first();
     }
 
     /**
      * Create a user from the given WorkOS user.
      */
-    protected function createUsing(User $user): AppUser
+    protected function createUsing(User $user): Authenticatable
     {
-        /** @phpstan-ignore class.notFound */
-        return AppUser::create([
+        $userModelClass = Config::get('auth.providers.users.model');
+
+        return $userModelClass::create([
             'name' => $user->firstName.' '.$user->lastName,
             'email' => $user->email,
             'email_verified_at' => now(),
@@ -96,7 +99,7 @@ class AuthKitAuthenticationRequest extends FormRequest
     /**
      * Update a user from the given WorkOS user.
      */
-    protected function updateUsing(AppUser $user, User $userFromWorkOS): AppUser
+    protected function updateUsing(Authenticatable $user, User $userFromWorkOS): Authenticatable
     {
         return tap($user)->update([
             // 'name' => $userFromWorkOS->firstName.' '.$userFromWorkOS->lastName,

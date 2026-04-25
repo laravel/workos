@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Laravel\WorkOS\WorkOS;
-use WorkOS\UserManagement;
 
 class AuthKitAccountDeletionRequest extends FormRequest
 {
@@ -20,10 +19,8 @@ class AuthKitAccountDeletionRequest extends FormRequest
         $user = $this->user();
 
         if (isset($user->workos_id) && ! app()->runningUnitTests()) {
-            WorkOS::configure();
-
-            (new UserManagement)->deleteUser(
-                $user->workos_id
+            WorkOS::client()->userManagement()->deleteUser(
+                $user->workos_id,
             );
         }
 

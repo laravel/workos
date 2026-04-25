@@ -5,33 +5,57 @@ namespace Laravel\WorkOS;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Throwable;
-use WorkOS\UserManagement;
 use WorkOS\WorkOS as SDK;
 
 class WorkOS
 {
     /**
-     * Ensure WorkOS is configured.
+     * Get the configured WorkOS client ID.
      */
-    public static function configure(): void
+    public static function clientId(): string
     {
-        if (! config('services.workos.client_id')) {
-            throw new RuntimeException("The 'services.workos.client_id' configuration value is undefined.");
-        }
+        return config('services.workos.client_id')
+            ?: throw new RuntimeException("The 'services.workos.client_id' configuration value is undefined.");
+    }
 
-        if (! config('services.workos.secret')) {
-            throw new RuntimeException("The 'services.workos.secret' configuration value is undefined.");
-        }
+    /**
+     * Get the configured WorkOS API secret.
+     */
+    public static function secret(): string
+    {
+        return config('services.workos.secret')
+            ?: throw new RuntimeException("The 'services.workos.secret' configuration value is undefined.");
+    }
 
-        if (! config('services.workos.redirect_url')) {
-            throw new RuntimeException("The 'services.workos.redirect_url' configuration value is undefined.");
-        }
+    /**
+     * Get the configured WorkOS redirect URL.
+     */
+    public static function redirectUrl(): string
+    {
+        return config('services.workos.redirect_url')
+            ?: throw new RuntimeException("The 'services.workos.redirect_url' configuration value is undefined.");
+    }
 
-        SDK::setClientId(config('services.workos.client_id'));
-        SDK::setApiKey(config('services.workos.secret'));
+    /**
+     * Get the configured WorkOS API base URL.
+     */
+    public static function baseUrl(): string
+    {
+        return config('services.workos.base_url', 'https://api.workos.com');
+    }
+
+    /**
+     * Build a configured WorkOS SDK client.
+     */
+    public static function client(): SDK
+    {
+        return new SDK(
+            apiKey: static::secret(),
+            clientId: static::clientId(),
+            baseUrl: static::baseUrl(),
+        );
     }
 
     /**
@@ -39,18 +63,16 @@ class WorkOS
      */
     public static function ensureAccessTokenIsValid(string $accessToken, string $refreshToken): array
     {
-        static::configure();
-
         $workOsSession = static::decodeAccessToken($accessToken);
 
         if (! $workOsSession) {
-            $result = (new UserManagement)->authenticateWithRefreshToken(
-                config('services.workos.client_id'), $refreshToken
+            $result = static::client()->userManagement()->authenticateWithRefreshToken(
+                refreshToken: $refreshToken,
             );
 
             return [
-                $result->access_token,
-                $result->refresh_token,
+                $result->accessToken,
+                $result->refreshToken,
             ];
         }
 
@@ -65,8 +87,6 @@ class WorkOS
      */
     public static function decodeAccessToken(string $accessToken): array|bool
     {
-        static::configure();
-
         try {
             return (array) JWT::decode($accessToken, JWK::parseKeySet(static::getJwk()));
         } catch (Throwable $e) {
@@ -82,9 +102,9 @@ class WorkOS
     protected static function getJwk(): array
     {
         return Cache::remember('workos:jwk', now()->addHours(12), function () {
-            return Http::get(
-                (new UserManagement)->getJwksUrl(config('services.workos.client_id'))
-            )->json();
+            return static::client()->userManagement()->getJwks(
+                static::clientId(),
+            )->toArray();
         });
     }
 }

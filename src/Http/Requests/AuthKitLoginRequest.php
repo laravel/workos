@@ -39,7 +39,7 @@ class AuthKitLoginRequest extends FormRequest
             'screen_hint' => $options['screenHint'] ?? null,
         ], fn ($value) => $value !== null);
 
-        $url = WorkOS::baseUrl().'/user_management/authorize?'.http_build_query($params);
+        $url = rtrim(WorkOS::baseUrl(), '/').'/user_management/authorize?'.http_build_query($params);
 
         $this->session()->put('state', json_encode($state));
 

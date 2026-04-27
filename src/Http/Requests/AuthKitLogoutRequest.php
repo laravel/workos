@@ -35,7 +35,7 @@ class AuthKitLogoutRequest extends FormRequest
             'return_to' => $redirectTo ? url($redirectTo) : null,
         ], fn ($value) => $value !== null);
 
-        $logoutUrl = WorkOS::baseUrl().'/user_management/sessions/logout?'.http_build_query($params);
+        $logoutUrl = rtrim(WorkOS::baseUrl(), '/').'/user_management/sessions/logout?'.http_build_query($params);
 
         return class_exists(Inertia::class)
             ? Inertia::location($logoutUrl)

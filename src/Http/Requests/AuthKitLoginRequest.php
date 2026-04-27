@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\WorkOS\WorkOS;
 use Symfony\Component\HttpFoundation\Response;
-use WorkOS\UserManagement;
 
 class AuthKitLoginRequest extends FormRequest
 {
@@ -24,19 +23,23 @@ class AuthKitLoginRequest extends FormRequest
      */
     public function redirect(array $options = []): Response
     {
-        WorkOS::configure();
+        $state = [
+            'state' => Str::random(20),
+            'previous_url' => base64_encode(URL::previous()),
+        ];
 
-        $url = (new UserManagement)->getAuthorizationUrl(
-            $options['redirectUrl'] ?? config('services.workos.redirect_url'),
-            $state = [
-                'state' => Str::random(20),
-                'previous_url' => base64_encode(URL::previous()),
-            ],
-            'authkit',
-            domainHint: $options['domainHint'] ?? null,
-            loginHint: $options['loginHint'] ?? null,
-            screenHint: $options['screenHint'] ?? null,
-        );
+        $params = array_filter([
+            'client_id' => WorkOS::clientId(),
+            'response_type' => 'code',
+            'redirect_uri' => $options['redirectUrl'] ?? WorkOS::redirectUrl(),
+            'provider' => 'authkit',
+            'state' => json_encode($state),
+            'domain_hint' => $options['domainHint'] ?? null,
+            'login_hint' => $options['loginHint'] ?? null,
+            'screen_hint' => $options['screenHint'] ?? null,
+        ], fn ($value) => $value !== null);
+
+        $url = rtrim(WorkOS::baseUrl(), '/').'/user_management/authorize?'.http_build_query($params);
 
         $this->session()->put('state', json_encode($state));
 

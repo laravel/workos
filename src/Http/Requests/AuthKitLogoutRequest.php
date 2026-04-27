@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Laravel\WorkOS\WorkOS;
 use Symfony\Component\HttpFoundation\Response;
-use WorkOS\UserManagement;
 
 class AuthKitLogoutRequest extends FormRequest
 {
@@ -31,10 +30,12 @@ class AuthKitLogoutRequest extends FormRequest
             return redirect($redirectTo ?? '/');
         }
 
-        $logoutUrl = (new UserManagement)->getLogoutUrl(
-            $workOsSession['sid'],
-            $redirectTo ? url($redirectTo) : null,
-        );
+        $params = array_filter([
+            'session_id' => $workOsSession['sid'],
+            'return_to' => $redirectTo ? url($redirectTo) : null,
+        ], fn ($value) => $value !== null);
+
+        $logoutUrl = rtrim(WorkOS::baseUrl(), '/').'/user_management/sessions/logout?'.http_build_query($params);
 
         return class_exists(Inertia::class)
             ? Inertia::location($logoutUrl)

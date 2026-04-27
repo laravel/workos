@@ -20,8 +20,6 @@ class ValidateSessionWithWorkOS
             return $next($request);
         }
 
-        WorkOS::configure();
-
         if (! $request->session()->get('workos_access_token') ||
             ! $request->session()->get('workos_refresh_token')) {
             return $this->logout($request);

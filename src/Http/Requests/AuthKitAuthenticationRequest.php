@@ -12,7 +12,6 @@ use Inertia\Inertia;
 use Laravel\WorkOS\User;
 use Laravel\WorkOS\WorkOS;
 use Symfony\Component\HttpFoundation\Response;
-use WorkOS\UserManagement;
 
 class AuthKitAuthenticationRequest extends FormRequest
 {
@@ -21,33 +20,23 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     public function authenticate(?callable $findUsing = null, ?callable $createUsing = null, ?callable $updateUsing = null): mixed
     {
-        WorkOS::configure();
-
         $this->ensureStateIsValid();
 
         $findUsing ??= $this->findUsing(...);
         $createUsing ??= $this->createUsing(...);
         $updateUsing ??= $this->updateUsing(...);
 
-        $user = (new UserManagement)->authenticateWithCode(
-            config('services.workos.client_id'),
-            $this->query('code'),
+        $response = WorkOS::client()->userManagement()->authenticateWithCode(
+            code: $this->query('code'),
         );
 
-        [$user, $accessToken, $refreshToken, $organizationId] = [
-            $user->user,
-            $user->access_token,
-            $user->refresh_token,
-            $user->organizationId,
-        ];
-
         $user = new User(
-            id: $user->id,
-            organizationId: $organizationId,
-            firstName: $user->firstName,
-            lastName: $user->lastName,
-            email: $user->email,
-            avatar: $user->profilePictureUrl,
+            id: $response->user->id,
+            organizationId: $response->organizationId,
+            firstName: $response->user->firstName,
+            lastName: $response->user->lastName,
+            email: $response->user->email,
+            avatar: $response->user->profilePictureUrl,
         );
 
         $existingUser = $findUsing($user);
@@ -62,8 +51,8 @@ class AuthKitAuthenticationRequest extends FormRequest
 
         Auth::guard('web')->login($existingUser);
 
-        $this->session()->put('workos_access_token', $accessToken);
-        $this->session()->put('workos_refresh_token', $refreshToken);
+        $this->session()->put('workos_access_token', $response->accessToken);
+        $this->session()->put('workos_refresh_token', $response->refreshToken);
 
         $this->session()->regenerate();
 

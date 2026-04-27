@@ -6,13 +6,14 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Laravel\WorkOS\WorkOS;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AuthKitAccountDeletionRequest extends FormRequest
 {
     /**
      * Redirect the user to WorkOS for authentication.
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function delete(Closure $using)
     {

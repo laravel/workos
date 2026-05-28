@@ -15,8 +15,7 @@ class AuthKitPasswordChangeRequest extends FormRequest
      */
     public function send(): mixed
     {
-        $user = $this->workOsUser();
-        $userManagement = $this->userManagement();
+        [$user, $userManagement] = [$this->workOsUser(), $this->userManagement()];
 
         $userFromWorkOS = $userManagement->getUser(
             id: $user->workos_id,
@@ -25,14 +24,6 @@ class AuthKitPasswordChangeRequest extends FormRequest
         return $userManagement->resetPassword(
             email: $userFromWorkOS->email,
         );
-    }
-
-    /**
-     * Get the WorkOS user management client.
-     */
-    protected function userManagement(): UserManagement
-    {
-        return WorkOS::client()->userManagement();
     }
 
     /**
@@ -47,5 +38,13 @@ class AuthKitPasswordChangeRequest extends FormRequest
         }
 
         return $user;
+    }
+
+    /**
+     * Get the WorkOS user management client.
+     */
+    protected function userManagement(): UserManagement
+    {
+        return WorkOS::client()->userManagement();
     }
 }

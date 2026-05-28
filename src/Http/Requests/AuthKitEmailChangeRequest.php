@@ -68,14 +68,6 @@ class AuthKitEmailChangeRequest extends FormRequest
     }
 
     /**
-     * Get the WorkOS user management client.
-     */
-    protected function userManagement(): UserManagement
-    {
-        return WorkOS::client()->userManagement();
-    }
-
-    /**
      * Get the authenticated user with a WorkOS ID.
      */
     protected function workOsUser(): Authenticatable
@@ -87,5 +79,13 @@ class AuthKitEmailChangeRequest extends FormRequest
         }
 
         return $user;
+    }
+
+    /**
+     * Get the WorkOS user management client.
+     */
+    protected function userManagement(): UserManagement
+    {
+        return WorkOS::client()->userManagement();
     }
 }

@@ -120,6 +120,7 @@ class AuthKitAuthenticationRequest extends FormRequest
         $query = $this->query('state');
 
         $state = is_string($query) ? (json_decode($query, true)['state'] ?? null) : null;
+
         $sessionState = $this->sessionState()['state'] ?? null;
 
         if (! is_string($state) || ! is_string($sessionState) || ! hash_equals($sessionState, $state)) {

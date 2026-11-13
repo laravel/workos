@@ -117,9 +117,13 @@ class AuthKitAuthenticationRequest extends FormRequest
      */
     protected function ensureStateIsValid(): void
     {
-        $state = json_decode($this->query('state'), true)['state'] ?? false;
+        $query = $this->query('state');
 
-        if ($state !== ($this->sessionState()['state'] ?? false)) {
+        $state = is_string($query) ? (json_decode($query, true)['state'] ?? null) : null;
+
+        $sessionState = $this->sessionState()['state'] ?? null;
+
+        if (! is_string($state) || ! is_string($sessionState) || ! hash_equals($sessionState, $state)) {
             abort(403);
         }
 
